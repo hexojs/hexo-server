@@ -1,0 +1,45 @@
+{
+  "name": "hexo-server",
+  "version": "0.0.1",
+  "description": "Server module of Hexo",
+  "main": "lib/hexo",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hexojs/server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hexojs/server/issues"
+  },
+  "homepage": "http://hexo.io/",
+  "keywords": [
+    "hexo",
+    "server"
+  ],
+  "author": "Tommy Chen <tommy351@gmail.com> (http://zespia.tw)",
+  "license": "MIT",
+  "dependencies": {
+    "colors": "0.6.2",
+    "connect": "3.x",
+    "serve-static": "^1.2.0",
+    "morgan": "^1.1.1",
+    "compression": "^1.0.3",
+    "mime": "^1.2.11"
+  },
+  "devDependencies": {
+    "mocha": "^1.20.1",
+    "chai": "^1.9.1",
+    "gulp": "^3.6.2",
+    "gulp-jshint": "^1.5.5",
+    "gulp-mocha": "^0.4.1",
+    "jshint-stylish": "^0.1.5"
+  }
+}
