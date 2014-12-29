@@ -2,7 +2,7 @@
   "name": "hexo-server",
   "version": "0.0.1",
   "description": "Server module of Hexo.",
-  "main": "lib/hexo",
+  "main": "index",
   "scripts": {
     "test": "gulp test"
   },
@@ -14,10 +14,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/hexojs/server.git"
+    "url": "git://github.com/hexojs/hexo-server.git"
   },
   "bugs": {
-    "url": "https://github.com/hexojs/server/issues"
+    "url": "https://github.com/hexojs/hexo-server/issues"
   },
   "homepage": "http://hexo.io/",
   "keywords": [
@@ -28,11 +28,23 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "^2.3.11",
-    "colors": "1.0.3",
+    "chalk": "^0.5.1",
     "compression": "^1.2.1",
     "connect": "3.x",
     "mime": "^1.2.11",
     "morgan": "^1.5.0",
     "serve-static": "^1.7.1"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "coveralls": "^2.11.2",
+    "gulp": "^3.8.9",
+    "gulp-istanbul": "^0.5.0",
+    "gulp-jshint": "^1.8.6",
+    "gulp-load-plugins": "^0.8.0",
+    "gulp-mocha": "^2.0.0",
+    "jshint-stylish": "^1.0.0",
+    "mocha": "^2.0.1",
+    "rimraf": "^2.2.8"
   }
 }
