@@ -1,3 +1,11 @@
+var merge = require('utils-merge');
+
+hexo.config.server = merge({
+  port: 4000,
+  log: false,
+  ip: '0.0.0.0'
+}, hexo.config.server);
+
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/logger'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/header'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/route'));

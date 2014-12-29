@@ -10,6 +10,25 @@ Server module for [Hexo].
 $ npm install hexo-server --save
 ```
 
+## Usage
+
+``` bash
+$ hexo server
+```
+
+## Options
+
+``` yaml
+server:
+  port: 4000
+  log: false
+  ip: 0.0.0.0
+```
+
+- **port**: Server port
+- **log**: Display request info on the console. Always enabled in debug mode.
+- **ip**: Server IP
+
 ## License
 
 MIT
