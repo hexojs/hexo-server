@@ -1,6 +1,6 @@
 {
   "name": "hexo-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Server module of Hexo.",
   "main": "index",
   "scripts": {
