@@ -8,7 +8,7 @@ var Promise = require('bluebird');
 describe('server', function(){
   var hexo = new Hexo(pathFn.join(__dirname, 'server_test'), {silent: true});
   var themeDir = pathFn.join(hexo.base_dir, 'themes', 'test');
-  var server = require('../lib/server');
+  var server = require('../lib/server').bind(hexo);
 
   // Default config
   hexo.config.server = {
@@ -55,7 +55,7 @@ describe('server', function(){
   }
 
   it('X-Powered-By header', function(done){
-    server.call(hexo, {$test_mode: true}).then(function(app){
+    server({$test_mode: true}).then(function(app){
       request(app).get('/')
       .expect('X-Powered-By', 'Hexo')
       .expect(200, 'index', stopServer(app, done));
@@ -63,7 +63,7 @@ describe('server', function(){
   });
 
   it('Content-Type header', function(done){
-    server.call(hexo, {$test_mode: true}).then(function(app){
+    server({$test_mode: true}).then(function(app){
       request(app).get('/bar.jpg')
       .expect('Content-Type', 'image/jpeg')
       .end(stopServer(app, done));
@@ -72,7 +72,7 @@ describe('server', function(){
 
   it('static asset', function(done){
     fs.writeFile(pathFn.join(hexo.public_dir, 'test.html'), 'test html').then(function(){
-      server.call(hexo, {$test_mode: true}).then(function(app){
+      server({$test_mode: true}).then(function(app){
         request(app).get('/test.html')
         .expect('Content-Type', 'text/html; charset=UTF-8')
         .expect(200, 'test html', stopServer(app, done));
@@ -82,20 +82,20 @@ describe('server', function(){
 
   it('invalid port', function(){
     try {
-      server.call(hexo, {port: -100});
+      server({port: -100});
     } catch (err){
       err.should.have.property('message', 'Port number -100 is invalid. Try a number between 1 and 65535.');
     }
 
     try {
-      server.call(hexo, {port: 70000});
+      server({port: 70000});
     } catch (err){
       err.should.have.property('message', 'Port number 70000 is invalid. Try a number between 1 and 65535.');
     }
   });
 
   it('append trailing slash', function(done){
-    server.call(hexo, {$test_mode: true}).then(function(app){
+    server({$test_mode: true}).then(function(app){
       request(app).get('/foo')
       .expect('Location', '/foo/')
       .expect(302, 'Redirecting', stopServer(app, done));
@@ -103,14 +103,14 @@ describe('server', function(){
   });
 
   it('don\'t append trailing slash if URL has a extension name', function(done){
-    server.call(hexo, {$test_mode: true}).then(function(app){
+    server({$test_mode: true}).then(function(app){
       request(app).get('/bar.txt')
       .expect(404, stopServer(app, done));
     });
   });
 
   it('only send headers on HEAD request', function(done){
-    server.call(hexo, {$test_mode: true}).then(function(app){
+    server({$test_mode: true}).then(function(app){
       request(app).head('/')
       .expect(200, '', stopServer(app, done));
     });
@@ -119,7 +119,7 @@ describe('server', function(){
   it('redirect to root URL if root is not `/`', function(done){
     hexo.config.root = '/test/';
 
-    server.call(hexo, {$test_mode: true}).then(function(app){
+    server({$test_mode: true}).then(function(app){
       hexo.config.root = '/';
 
       request(app).get('/')
