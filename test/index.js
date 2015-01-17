@@ -56,26 +56,26 @@ describe('server', function(){
 
   it('X-Powered-By header', function(done){
     server({$test_mode: true}).then(function(app){
-      request(app).get('/')
-      .expect('X-Powered-By', 'Hexo')
-      .expect(200, 'index', stopServer(app, done));
+      request('http://localhost:4000').get('/')
+        .expect('X-Powered-By', 'Hexo')
+        .expect(200, 'index', stopServer(app, done));
     });
   });
 
   it('Content-Type header', function(done){
     server({$test_mode: true}).then(function(app){
-      request(app).get('/bar.jpg')
-      .expect('Content-Type', 'image/jpeg')
-      .end(stopServer(app, done));
+      request('http://localhost:4000').get('/bar.jpg')
+        .expect('Content-Type', 'image/jpeg')
+        .end(stopServer(app, done));
     });
   });
 
   it('static asset', function(done){
     fs.writeFile(pathFn.join(hexo.public_dir, 'test.html'), 'test html').then(function(){
       server({$test_mode: true}).then(function(app){
-        request(app).get('/test.html')
-        .expect('Content-Type', 'text/html; charset=UTF-8')
-        .expect(200, 'test html', stopServer(app, done));
+        request('http://localhost:4000').get('/test.html')
+          .expect('Content-Type', 'text/html; charset=UTF-8')
+          .expect(200, 'test html', stopServer(app, done));
       });
     }, done);
   });
@@ -96,23 +96,23 @@ describe('server', function(){
 
   it('append trailing slash', function(done){
     server({$test_mode: true}).then(function(app){
-      request(app).get('/foo')
-      .expect('Location', '/foo/')
-      .expect(302, 'Redirecting', stopServer(app, done));
+      request('http://localhost:4000').get('/foo')
+        .expect('Location', '/foo/')
+        .expect(302, 'Redirecting', stopServer(app, done));
     });
   });
 
   it('don\'t append trailing slash if URL has a extension name', function(done){
     server({$test_mode: true}).then(function(app){
-      request(app).get('/bar.txt')
-      .expect(404, stopServer(app, done));
+      request('http://localhost:4000').get('/bar.txt')
+        .expect(404, stopServer(app, done));
     });
   });
 
   it('only send headers on HEAD request', function(done){
     server({$test_mode: true}).then(function(app){
-      request(app).head('/')
-      .expect(200, '', stopServer(app, done));
+      request('http://localhost:4000').head('/')
+        .expect(200, '', stopServer(app, done));
     });
   });
 
@@ -122,9 +122,9 @@ describe('server', function(){
     server({$test_mode: true}).then(function(app){
       hexo.config.root = '/';
 
-      request(app).get('/')
-      .expect('Location', '/test/')
-      .expect(301, 'Redirecting', stopServer(app, done));
+      request('http://localhost:4000').get('/')
+        .expect('Location', '/test/')
+        .expect(301, 'Redirecting', stopServer(app, done));
     });
   });
 });
