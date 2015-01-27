@@ -12,7 +12,7 @@ hexo.extend.console.register('server', 'Start the server.', {
     {name: '-i, --ip', desc: 'Override the default server IP. Bind to all IP address by default.'},
     {name: '-p, --port', desc: 'Override the default port.'},
     {name: '-s, --static', desc: 'Only serve static files.'},
-    {name: '-l, --log [format]', desc: 'Enable logger. Override the logger format.'},
+    {name: '-l, --log [format]', desc: 'Enable logger. Override log format.'},
     {name: '-o, --open', desc: 'Immediately open the server url in your default web browser.'}
   ]
 }, require('./lib/server'));

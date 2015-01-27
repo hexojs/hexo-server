@@ -16,6 +16,14 @@ $ npm install hexo-server --save
 $ hexo server
 ```
 
+Option | Description | Default
+--- | --- | ---
+`-i`, `--ip` | Override the default server IP. | 0.0.0.0
+`-p`, `--port` | Override the default port. | 4000
+`-s`, `--static` | Only serve static files. | false
+`-l`, `--log [format]` | Enable logger. Override log format. | false
+`-o`, `--open` | Immediately open the server url in your default web browser. | false
+
 ## Options
 
 ``` yaml
