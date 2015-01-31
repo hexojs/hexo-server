@@ -1,9 +1,12 @@
+'use strict';
+
 var should = require('chai').should();
 var Hexo = require('hexo');
 var request = require('supertest');
 var pathFn = require('path');
 var fs = require('hexo-fs');
 var Promise = require('bluebird');
+var net = require('net');
 
 describe('server', function(){
   var hexo = new Hexo(pathFn.join(__dirname, 'server_test'), {silent: true});
@@ -43,19 +46,27 @@ describe('server', function(){
     });
   });
 
+  afterEach(function(){
+    return hexo.unwatch();
+  });
+
   after(function(){
     return fs.rmdir(hexo.base_dir);
   });
 
   function stopServer(app, callback){
     return function(err){
-      if (err) return callback(err);
-      app.close(callback);
+      app.close(function(err_){
+        if (err) return callback(err);
+        if (err_) return callback(err_);
+
+        callback();
+      });
     };
   }
 
   it('X-Powered-By header', function(done){
-    server({$test_mode: true}).then(function(app){
+    server({}).then(function(app){
       request('http://localhost:4000').get('/')
         .expect('X-Powered-By', 'Hexo')
         .expect(200, 'index', stopServer(app, done));
@@ -63,7 +74,7 @@ describe('server', function(){
   });
 
   it('Content-Type header', function(done){
-    server({$test_mode: true}).then(function(app){
+    server({}).then(function(app){
       request('http://localhost:4000').get('/bar.jpg')
         .expect('Content-Type', 'image/jpeg')
         .end(stopServer(app, done));
@@ -72,7 +83,7 @@ describe('server', function(){
 
   it('static asset', function(done){
     fs.writeFile(pathFn.join(hexo.public_dir, 'test.html'), 'test html').then(function(){
-      server({$test_mode: true}).then(function(app){
+      server({}).then(function(app){
         request('http://localhost:4000').get('/test.html')
           .expect('Content-Type', 'text/html; charset=UTF-8')
           .expect(200, 'test html', stopServer(app, done));
@@ -81,21 +92,45 @@ describe('server', function(){
   });
 
   it('invalid port', function(){
-    try {
-      server({port: -100});
-    } catch (err){
+    return server({port: -100}).catch(function(err){
       err.should.have.property('message', 'Port number -100 is invalid. Try a number between 1 and 65535.');
-    }
+    });
+  });
 
-    try {
-      server({port: 70000});
-    } catch (err){
-      err.should.have.property('message', 'Port number 70000 is invalid. Try a number between 1 and 65535.');
-    }
+  it('invalid port > 65535', function(){
+    return server({port: 65536}).catch(function(err){
+      err.should.have.property('message', 'Port number 65536 is invalid. Try a number between 1 and 65535.');
+    });
+  });
+
+  it('change port setting', function(done){
+    server({port: 5000}).then(function(app){
+      request('http://localhost:5000').get('/')
+        .expect(200, 'index', stopServer(app, done));
+    });
+  });
+
+  it('check port before starting', function(callback){
+    var s = net.createServer();
+
+    s.listen(4000, function(){
+      server({}).catch(function(err){
+        err.code.should.eql('EADDRINUSE');
+        callback();
+      }).finally(function(){
+        s.close();
+      });
+    });
+  });
+
+  it('change ip setting', function(){
+    return server({ip: '1.2.3.4'}).catch(function(err){
+      err.code.should.eql('EADDRNOTAVAIL');
+    });
   });
 
   it('append trailing slash', function(done){
-    server({$test_mode: true}).then(function(app){
+    server({}).then(function(app){
       request('http://localhost:4000').get('/foo')
         .expect('Location', '/foo/')
         .expect(302, 'Redirecting', stopServer(app, done));
@@ -103,14 +138,14 @@ describe('server', function(){
   });
 
   it('don\'t append trailing slash if URL has a extension name', function(done){
-    server({$test_mode: true}).then(function(app){
+    server({}).then(function(app){
       request('http://localhost:4000').get('/bar.txt')
         .expect(404, stopServer(app, done));
     });
   });
 
   it('only send headers on HEAD request', function(done){
-    server({$test_mode: true}).then(function(app){
+    server({}).then(function(app){
       request('http://localhost:4000').head('/')
         .expect(200, '', stopServer(app, done));
     });
@@ -119,7 +154,7 @@ describe('server', function(){
   it('redirect to root URL if root is not `/`', function(done){
     hexo.config.root = '/test/';
 
-    server({$test_mode: true}).then(function(app){
+    server({}).then(function(app){
       hexo.config.root = '/';
 
       request('http://localhost:4000').get('/')
