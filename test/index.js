@@ -30,12 +30,12 @@ describe('server', function(){
   });
 
   // Register middlewares
-  hexo.extend.filter.register('server_middleware', require('../lib/middlewares/logger'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/header'));
+  hexo.extend.filter.register('server_middleware', require('../lib/middlewares/gzip'));
+  hexo.extend.filter.register('server_middleware', require('../lib/middlewares/logger'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/route'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/static'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/redirect'));
-  hexo.extend.filter.register('server_middleware', require('../lib/middlewares/gzip'));
 
   before(function(){
     return Promise.all([
@@ -77,6 +77,14 @@ describe('server', function(){
     server({}).then(function(app){
       request('http://localhost:4000').get('/bar.jpg')
         .expect('Content-Type', 'image/jpeg')
+        .end(stopServer(app, done));
+    });
+  });
+
+  it('Gzip', function(done){
+    server({}).then(function(app){
+      request('http://localhost:4000').get('/')
+        .expect('Content-Encoding', 'gzip')
         .end(stopServer(app, done));
     });
   });
