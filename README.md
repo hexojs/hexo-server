@@ -30,7 +30,7 @@ Option | Description | Default
 server:
   port: 4000
   log: false
-  ip: 0.0.0.0
+  ip: 127.0.0.1
 ```
 
 - **port**: Server port
