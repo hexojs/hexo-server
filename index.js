@@ -19,6 +19,7 @@ hexo.extend.console.register('server', 'Start the server.', {
   ]
 }, require('./lib/server'));
 
+hexo.extend.filter.register('server_middleware', require('./lib/middlewares/oauth'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/header'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/gzip'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/logger'));
