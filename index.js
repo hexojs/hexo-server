@@ -1,3 +1,5 @@
+/* global hexo */
+
 'use strict';
 
 var assign = require('object-assign');
