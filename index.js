@@ -5,7 +5,6 @@
 var assign = require('object-assign');
 
 hexo.config.server = assign({
-  port: 4000,
   log: false,
   ip: '0.0.0.0'
 }, hexo.config.server);
