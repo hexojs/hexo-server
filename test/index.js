@@ -131,7 +131,14 @@ describe('server', function() {
     });
   });
 
-  it('change ip setting', function() {
+  it('change ip setting', function(done) {
+    server({ip: '127.0.0.1'}).then(function(app) {
+      request('http://127.0.0.1:4000').get('/')
+        .expect(200, 'index', stopServer(app, done));
+    });
+  });
+
+  it('invalid ip setting', function() {
     return server({ip: '1.2.3.4'}).catch(function(err) {
       err.code.should.eql('EADDRNOTAVAIL');
     });
