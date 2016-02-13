@@ -31,11 +31,15 @@ server:
   port: 4000
   log: false
   ip: 0.0.0.0
+  compress: false
+  header: true
 ```
 
 - **port**: Server port
 - **log**: Display request info on the console. Always enabled in debug mode.
 - **ip**: Server IP
+- **compress**: Enable GZIP compression
+- **header**: Add `X-Powered-By: Hexo` header
 
 ## License
 
