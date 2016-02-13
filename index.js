@@ -6,7 +6,7 @@ var assign = require('object-assign');
 
 hexo.config.server = assign({
   log: false,
-  ip: '0.0.0.0'
+  ip: '127.0.0.1'
 }, hexo.config.server);
 
 hexo.extend.console.register('server', 'Start the server.', {
