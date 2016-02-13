@@ -153,7 +153,7 @@ describe('server', function() {
           .expect('Content-Type', 'text/html; charset=UTF-8')
           .expect(200, content)
           .end();
-      })
+      });
     }).finally(function() {
       return fs.unlink(path);
     });
