@@ -236,7 +236,7 @@ describe('server', function() {
     sinon.stub(hexo.log, 'info', spy);
 
     return Promise.using(prepareServer(), function(app) {
-      spy.args[0][1].should.contain('localhost');
+      spy.args[1][1].should.contain('localhost');
     }).finally(function() {
       hexo.log.info.restore();
     });
