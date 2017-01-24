@@ -10,6 +10,13 @@ Server module for [Hexo].
 $ npm install hexo-server --save
 ```
 
+And hexo-server to \_config.yml:
+
+```yaml
+plugins:
+  - hexo-server
+```
+
 ## Usage
 
 ``` bash
