@@ -1,6 +1,6 @@
 {
   "name": "hexo-server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Server module of Hexo.",
   "main": "index",
   "scripts": {
@@ -20,6 +20,9 @@
     "connect"
   ],
   "author": "Tommy Chen <tommy351@gmail.com> (http://zespia.tw)",
+  "maintainers": [
+    "Abner Chou <hi@abnerchou.me> (http://abnerchou.me)"
+    ],
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.0.6",
