@@ -5,8 +5,9 @@
 var assign = require('object-assign');
 
 hexo.config.server = assign({
-  address: '0.0.0.0:80',
+  port: 4000,
   log: false,
+  ip: '0.0.0.0',
   compress: false,
   header: true
 }, hexo.config.server);
@@ -14,7 +15,8 @@ hexo.config.server = assign({
 hexo.extend.console.register('server', 'Start the server.', {
   desc: 'Start the server and watch for file changes.',
   options: [
-    {name: '-a, --address', desc: 'Override the default server address. Bind to localhost:4000 by default.'},
+    {name: '-i, --ip', desc: 'Override the default server IP. Bind to all IP address by default.'},
+    {name: '-p, --port', desc: 'Override the default port.'},
     {name: '-s, --static', desc: 'Only serve static files.'},
     {name: '-l, --log [format]', desc: 'Enable logger. Override log format.'},
     {name: '-o, --open', desc: 'Immediately open the server url in your default web browser.'}
