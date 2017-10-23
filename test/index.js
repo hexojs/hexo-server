@@ -28,7 +28,6 @@ describe('server', function() {
     return [
       {path: '', data: 'index'},
       {path: 'foo/', data: 'foo'},
-      {path: 'foo/bar', data: 'foobar'},
       {path: 'bar.jpg', data: 'bar'}
     ];
   });
@@ -203,15 +202,6 @@ describe('server', function() {
     });
   });
 
-  it('append ".html" subfix if there has a page match url', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/foo/bar')
-        .expect('Location', '/foo/bar.html')
-        .expect(302, 'Redirecting')
-        .end();
-    });
-  });
-  
   it('don\'t append trailing slash if URL has a extension name', function() {
     return Promise.using(prepareServer(), function(app) {
       return request(app).get('/bar.txt')
