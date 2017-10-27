@@ -33,6 +33,9 @@ server:
   ip: 0.0.0.0
   compress: false
   header: true
+  serveStatic:
+    extensions:
+    - html
 ```
 
 - **port**: Server port
@@ -40,6 +43,7 @@ server:
 - **ip**: Server IP
 - **compress**: Enable GZIP compression
 - **header**: Add `X-Powered-By: Hexo` header
+- **serveStatic**: Extra options passed to [serve-static](https://github.com/expressjs/serve-static#options)
 
 ## License
 
