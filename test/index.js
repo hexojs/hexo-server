@@ -241,4 +241,15 @@ describe('server', function() {
       hexo.log.info.restore();
     });
   });
+
+  it('display localhost instead of [::]', function() {
+    var spy = sinon.spy();
+    sinon.stub(hexo.log, 'info', spy);
+
+    return Promise.using(prepareServer({ip: '::'}), function(app) {
+      spy.args[1][1].should.contain('localhost');
+    }).finally(function() {
+      hexo.log.info.restore();
+    });
+  });
 });
