@@ -18,7 +18,7 @@ $ hexo server
 
 Option | Description | Default
 --- | --- | ---
-`-i`, `--ip` | Override the default server IP. | 0.0.0.0
+`-i`, `--ip` | Override the default server IP. | `::` when IPv6 is available, else `0.0.0.0` (note: in most systems, `::` also binds to `0.0.0.0`)
 `-p`, `--port` | Override the default port. | 4000
 `-s`, `--static` | Only serve static files. | false
 `-l`, `--log [format]` | Enable logger. Override log format. | false
