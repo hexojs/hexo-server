@@ -7,7 +7,8 @@ var assign = require('object-assign');
 hexo.config.server = assign({
   port: 4000,
   log: false,
-  ip: '0.0.0.0',
+  // `undefined` uses Node's default (try `::` with fallback to `0.0.0.0`)
+  ip: undefined,
   compress: false,
   header: true
 }, hexo.config.server);
