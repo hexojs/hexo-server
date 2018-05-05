@@ -224,7 +224,7 @@ describe('server', function() {
     return Promise.using(prepareServer(), function(app) {
       return request(app).get('/')
         .expect('Location', '/test/')
-        .expect(301, 'Redirecting')
+        .expect(302, 'Redirecting')
         .end();
     }).finally(function() {
       hexo.config.root = '/';
