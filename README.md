@@ -23,6 +23,8 @@ Option | Description | Default
 `-s`, `--static` | Only serve static files. | false
 `-l`, `--log [format]` | Enable logger. Override log format. | false
 `-o`, `--open` | Immediately open the server url in your default web browser. | false
+`-P`, `--proxy-path` | Proxy the given path(s) | undefined
+`-U`, `--proxy-url` | Proxy target URL | undefined
 
 ## Options
 
@@ -36,6 +38,8 @@ server:
   serveStatic:
     extensions:
     - html
+  proxyPath: undefined
+  proxyUrl: undefined
 ```
 
 - **port**: Server port
@@ -44,6 +48,7 @@ server:
 - **compress**: Enable GZIP compression
 - **header**: Add `X-Powered-By: Hexo` header
 - **serveStatic**: Extra options passed to [serve-static](https://github.com/expressjs/serve-static#options)
+- **proxyPath**, **proxyUrl**: If specified, an [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) proxy will be instantiated as `app.use(proxyPath, proxy({target: proxyUrl, changeOrigin: true}))`.
 
 ## License
 
