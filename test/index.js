@@ -202,6 +202,15 @@ describe('server', function() {
     });
   });
 
+  it('preserve query part after appending trailing slash', function() {
+    return Promise.using(prepareServer(), function(app) {
+      return request(app).get('/foo?x=y')
+        .expect('Location', '/foo/?x=y')
+        .expect(302, 'Redirecting')
+        .end();
+    });
+  });
+
   it('don\'t append trailing slash if URL has a extension name', function() {
     return Promise.using(prepareServer(), function(app) {
       return request(app).get('/bar.txt')
