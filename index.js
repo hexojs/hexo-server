@@ -20,7 +20,9 @@ hexo.extend.console.register('server', 'Start the server.', {
     {name: '-p, --port', desc: 'Override the default port.'},
     {name: '-s, --static', desc: 'Only serve static files.'},
     {name: '-l, --log [format]', desc: 'Enable logger. Override log format.'},
-    {name: '-o, --open', desc: 'Immediately open the server url in your default web browser.'}
+    {name: '-o, --open', desc: 'Immediately open the server url in your default web browser.'},
+    {name: '-P, --proxy-path', desc: 'Proxy this path.'},
+    {name: '-U, --proxy-url', desc: 'Proxy the path specified with -P to this URL.'}
   ]
 }, require('./lib/server'));
 
@@ -30,3 +32,4 @@ hexo.extend.filter.register('server_middleware', require('./lib/middlewares/logg
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/route'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/static'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/redirect'));
+hexo.extend.filter.register('server_middleware', require('./lib/middlewares/proxy'));
