@@ -261,8 +261,8 @@ describe('server', function() {
       proxyPath: '/proxy',
       proxyUrl: 'http://localhost:17320/'
     }, hexo.config.server);
-    
-    var fakeServer = http.createServer(function (req, res) {
+
+    var fakeServer = http.createServer(function(req, res) {
       res.end('OK');
     }).listen(17320);
 
