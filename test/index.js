@@ -262,14 +262,16 @@ describe('server', function() {
       proxyUrl: 'http://localhost:17320/'
     }, hexo.config.server);
     
-    var http = require('http').createServer(function (req, res) { res.end('OK'); }).listen(17320);
+    var fakeServer = http.createServer(function (req, res) {
+      res.end('OK');
+    }).listen(17320);
 
     return Promise.using(prepareServer(), function(app) {
       return request(app).get('/proxy/')
         .expect(200, 'OK')
         .end();
     }).finally(function() {
-      http.close();
+      fakeServer.close();
       hexo.config.server = serverConfig;
     });
   });
