@@ -28,11 +28,18 @@ describe('server', function() {
     return [
       {path: '', data: 'index'},
       {path: 'foo/', data: 'foo'},
-      {path: 'bar.jpg', data: 'bar'}
+      {path: 'bar.jpg', data: 'bar'},
+      {path: 'baz.zzz', data: ''}
     ];
   });
 
   // Register middlewares
+  hexo.extend.filter.register('server_middleware', function(app) {
+    app.use('/baz.zzz', function (req, res, next) {
+      res.setHeader('Content-Type', 'application/x-custom');
+      next();
+    });
+  });
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/header'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/gzip'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/logger'));
@@ -116,6 +123,15 @@ describe('server', function() {
     return Promise.using(prepareServer(), function(app) {
       return request(app).get('/bar.jpg')
         .expect('Content-Type', 'image/jpeg')
+        .expect(200)
+        .end();
+    });
+  });
+
+  it('Do not try to overwrite Content-Type header', function() {
+    return Promise.using(prepareServer(), function(app) {
+      return request(app).get('/baz.zzz')
+        .expect('Content-Type', 'application/x-custom')
         .expect(200)
         .end();
     });
