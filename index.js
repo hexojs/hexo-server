@@ -2,9 +2,7 @@
 
 'use strict';
 
-var assign = require('object-assign');
-
-hexo.config.server = assign({
+hexo.config.server = Object.assign({
   port: 4000,
   log: false,
   // `undefined` uses Node's default (try `::` with fallback to `0.0.0.0`)
