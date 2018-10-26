@@ -43,7 +43,7 @@
     "istanbul": "^0.4.1",
     "jscs": "^2.6.0",
     "jscs-preset-hexo": "^1.0.1",
-    "mocha": "^2.3.4",
+    "mocha": "^5.2.0",
     "sinon": "^1.17.3",
     "supertest": "^1.2.0",
     "supertest-promised": "^1.0.0",
