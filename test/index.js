@@ -245,7 +245,7 @@ describe('server', function() {
 
   it('display localhost instead of [::]', function() {
     var spy = sinon.spy();
-    var stub = sinon.stub(hexo.log, 'info')
+    var stub = sinon.stub(hexo.log, 'info');
     stub.callsFake(spy);
 
     return Promise.using(prepareServer({ip: '::'}), function(app) {
