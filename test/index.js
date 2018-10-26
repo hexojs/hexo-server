@@ -233,23 +233,25 @@ describe('server', function() {
 
   it('display localhost instead of 0.0.0.0', function() {
     var spy = sinon.spy();
-    sinon.stub(hexo.log, 'info', spy);
+    var stub = sinon.stub(hexo.log, 'info');
+    stub.callsFake(spy);
 
     return Promise.using(prepareServer(), function(app) {
       spy.args[1][1].should.contain('localhost');
     }).finally(function() {
-      hexo.log.info.restore();
+      stub.restore();
     });
   });
 
   it('display localhost instead of [::]', function() {
     var spy = sinon.spy();
-    sinon.stub(hexo.log, 'info', spy);
+    var stub = sinon.stub(hexo.log, 'info')
+    stub.callsFake(spy);
 
     return Promise.using(prepareServer({ip: '::'}), function(app) {
       spy.args[1][1].should.contain('localhost');
     }).finally(function() {
-      hexo.log.info.restore();
+      stub.restore();
     });
   });
 });
