@@ -41,7 +41,7 @@
     "hexo-fs": "^1.0.0",
     "istanbul": "^0.4.1",
     "mocha": "^5.2.0",
-    "sinon": "^1.17.3",
+    "sinon": "^7.0.0",
     "supertest": "^1.2.0",
     "supertest-promised": "^1.0.0",
     "uuid": "^2.0.1"
