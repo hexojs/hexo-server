@@ -2,10 +2,7 @@ language: node_js
 
 sudo: false
 
-cache:
-  apt: true
-  directories:
-    - node_modules
+cache: false
 
 node_js:
   - "6"
