@@ -8,6 +8,7 @@ var fs = require('hexo-fs');
 var Promise = require('bluebird');
 var uuid = require('uuid');
 var sinon = require('sinon');
+var http = require('http');
 
 describe('server', function() {
   var hexo = new Hexo(pathFn.join(__dirname, 'server_test'), {silent: true});
@@ -39,6 +40,7 @@ describe('server', function() {
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/route'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/static'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/redirect'));
+  hexo.extend.filter.register('server_middleware', require('../lib/middlewares/proxy'));
 
   before(function() {
     return Promise.all([
@@ -252,6 +254,27 @@ describe('server', function() {
       spy.args[1][1].should.contain('localhost');
     }).finally(function() {
       stub.restore();
+    });
+  });
+
+  it('use proxy if given', function() {
+    var serverConfig = hexo.config.server;
+    hexo.config.server = Object.assign({
+      proxyPath: '/proxy',
+      proxyUrl: 'http://localhost:17320/'
+    }, hexo.config.server);
+
+    var fakeServer = http.createServer(function(req, res) {
+      res.end('OK');
+    }).listen(17320);
+
+    return Promise.using(prepareServer(), function(app) {
+      return request(app).get('/proxy/')
+        .expect(200, 'OK')
+        .end();
+    }).finally(function() {
+      fakeServer.close();
+      hexo.config.server = serverConfig;
     });
   });
 });
