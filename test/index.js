@@ -128,9 +128,9 @@ describe('server', () => {
       .end())).finally(() => fs.unlink(path));
   });
 
-  it('invalid port', () => server({port: -100}).should.to.rejectedWith('Port number -100 is invalid. Try a number between 1 and 65535.'));
+  it('invalid port', () => server({port: -100}).should.to.rejectedWith(RangeError, 'Port number -100 is invalid. Try a number between 1 and 65535.'));
 
-  it('invalid port > 65535', () => server({port: 65536}).should.to.rejectedWith('Port number 65536 is invalid. Try a number between 1 and 65535.'));
+  it('invalid port > 65535', () => server({port: 65536}).should.to.rejectedWith(RangeError, 'Port number 65536 is invalid. Try a number between 1 and 65535.'));
 
   it('change port setting', () => Promise.using(prepareServer({port: 5000}), app => request(app).get('/')
     .expect(200, 'index')
