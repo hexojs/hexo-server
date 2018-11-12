@@ -1,6 +1,8 @@
 'use strict';
 
-const should = require('chai').should(); // eslint-disable-line
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+chai.should();
 const Hexo = require('hexo');
 const request = require('supertest-promised');
 const { join } = require('path');
@@ -126,25 +128,17 @@ describe('server', () => {
       .end())).finally(() => fs.unlink(path));
   });
 
-  it('invalid port', () => server({port: -100}).catch(err => {
-    err.should.have.property('message', 'Port number -100 is invalid. Try a number between 1 and 65535.');
-  }));
+  it('invalid port', () => server({port: -100}).should.to.rejectedWith('Port number -100 is invalid. Try a number between 1 and 65535.'));
 
-  it('invalid port > 65535', () => server({port: 65536}).catch(err => {
-    err.should.have.property('message', 'Port number 65536 is invalid. Try a number between 1 and 65535.');
-  }));
+  it('invalid port > 65535', () => server({port: 65536}).should.to.rejectedWith('Port number 65536 is invalid. Try a number between 1 and 65535.'));
 
   it('change port setting', () => Promise.using(prepareServer({port: 5000}), app => request(app).get('/')
     .expect(200, 'index')
     .end()));
 
-  it('check port before starting', () => Promise.using(prepareServer(), app => server({}).catch(err => {
-    err.code.should.eql('EADDRINUSE');
-  })));
+  it('check port before starting', () => Promise.using(prepareServer(), app => server({}).should.rejected.and.eventually.have.property('code', 'EADDRINUSE')));
 
-  it('change ip setting', () => server({ip: '1.2.3.4'}).catch(err => {
-    err.code.should.eql('EADDRNOTAVAIL');
-  }));
+  it('change ip setting', () => server({ip: '1.2.3.4'}).should.rejected.and.eventually.have.property('code', 'EADDRNOTAVAIL'));
 
   it('append trailing slash', () => Promise.using(prepareServer(), app => request(app).get('/foo')
     .expect('Location', '/foo/')
