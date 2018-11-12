@@ -3,15 +3,16 @@
 const should = require('chai').should(); // eslint-disable-line
 const Hexo = require('hexo');
 const request = require('supertest-promised');
-const pathFn = require('path');
+const { join } = require('path');
 const fs = require('hexo-fs');
 const Promise = require('bluebird');
 const uuid = require('uuid');
 const sinon = require('sinon');
 
 describe('server', () => {
-  const hexo = new Hexo(pathFn.join(__dirname, 'server_test'), {silent: true});
-  const themeDir = pathFn.join(hexo.base_dir, 'themes', 'test');
+  const hexo = new Hexo(join(__dirname, 'server_test'), {silent: true});
+  const themeDir = join(hexo.base_dir, 'themes', 'test');
+
   const server = require('../lib/server').bind(hexo);
 
   // Default config
@@ -116,7 +117,7 @@ describe('server', () => {
     })));
 
   it('static asset', () => {
-    const path = pathFn.join(hexo.public_dir, 'test.html');
+    const path = join(hexo.public_dir, 'test.html');
     const content = 'test html';
 
     return fs.writeFile(path, content).then(() => Promise.using(prepareServer(), app => request(app).get('/test.html')
