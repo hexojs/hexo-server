@@ -1,18 +1,21 @@
 'use strict';
 
-var should = require('chai').should(); // eslint-disable-line
-var Hexo = require('hexo');
-var request = require('supertest-promised');
-var pathFn = require('path');
-var fs = require('hexo-fs');
-var Promise = require('bluebird');
-var uuid = require('uuid');
-var sinon = require('sinon');
+const chai = require('chai');
+chai.use(require('chai-as-promised'));
+chai.should();
+const Hexo = require('hexo');
+const request = require('supertest-promised');
+const { join } = require('path');
+const fs = require('hexo-fs');
+const Promise = require('bluebird');
+const uuid = require('uuid');
+const sinon = require('sinon');
 
-describe('server', function() {
-  var hexo = new Hexo(pathFn.join(__dirname, 'server_test'), {silent: true});
-  var themeDir = pathFn.join(hexo.base_dir, 'themes', 'test');
-  var server = require('../lib/server').bind(hexo);
+describe('server', () => {
+  const hexo = new Hexo(join(__dirname, 'server_test'), {silent: true});
+  const themeDir = join(hexo.base_dir, 'themes', 'test');
+
+  const server = require('../lib/server').bind(hexo);
 
   // Default config
   hexo.config.server = {
@@ -24,13 +27,11 @@ describe('server', function() {
   };
 
   // Register fake generator
-  hexo.extend.generator.register('test', function() {
-    return [
-      {path: '', data: 'index'},
-      {path: 'foo/', data: 'foo'},
-      {path: 'bar.jpg', data: 'bar'}
-    ];
-  });
+  hexo.extend.generator.register('test', () => [
+    {path: '', data: 'index'},
+    {path: 'foo/', data: 'foo'},
+    {path: 'bar.jpg', data: 'bar'}
+  ]);
 
   // Register middlewares
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/header'));
@@ -40,44 +41,34 @@ describe('server', function() {
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/static'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/redirect'));
 
-  before(function() {
-    return Promise.all([
-      fs.mkdirs(themeDir),
-      fs.writeFile(hexo.config_path, 'theme: test')
-    ]).then(function() {
-      return hexo.init();
-    });
-  });
+  before(() => Promise.all([
+    fs.mkdirs(themeDir),
+    fs.writeFile(hexo.config_path, 'theme: test')
+  ]).then(() => hexo.init()));
 
-  afterEach(function() {
-    return hexo.unwatch();
-  });
+  afterEach(() => hexo.unwatch());
 
-  after(function() {
-    return fs.rmdir(hexo.base_dir);
-  });
+  after(() => fs.rmdir(hexo.base_dir));
 
-  function prepareServer(options) {
-    options = options || {};
+  function prepareServer(options = {}) {
+    const connections = {};
 
-    var connections = {};
-
-    return server(options).then(function(app) {
-      app.on('connection', function(conn) {
-        var id = uuid.v4();
+    return server(options).then(app => {
+      app.on('connection', conn => {
+        const id = uuid.v4();
 
         connections[id] = conn;
 
-        conn.on('close', function() {
+        conn.on('close', () => {
           conn.unref();
           delete connections[id];
         });
       });
 
       return app;
-    }).disposer(function(app) {
-      Object.keys(connections).forEach(function(id) {
-        var conn = connections[id];
+    }).disposer(app => {
+      Object.keys(connections).forEach(id => {
+        const conn = connections[id];
 
         conn.unref();
         conn.destroy();
@@ -88,169 +79,111 @@ describe('server', function() {
     });
   }
 
-  it('X-Powered-By header', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/')
-        .expect('X-Powered-By', 'Hexo')
-        .expect(200, 'index')
-        .end();
-    });
-  });
+  it('X-Powered-By header', () => Promise.using(prepareServer(), app => request(app).get('/')
+    .expect('X-Powered-By', 'Hexo')
+    .expect(200, 'index')
+    .end()));
 
-  it('Remove X-Powered-By header if options.header is false', function() {
+  it('Remove X-Powered-By header if options.header is false', () => {
     hexo.config.server.header = false;
 
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/')
-        .expect(200)
-        .end()
-        .then(function(res) {
-          res.headers.should.not.have.property('x-powered-by');
-        });
-    }).finally(function() {
+    return Promise.using(prepareServer(), app => request(app).get('/')
+      .expect(200)
+      .end()
+      .then(res => {
+        res.headers.should.not.have.property('x-powered-by');
+      })).finally(() => {
       hexo.config.server.header = true;
     });
   });
 
-  it('Content-Type header', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/bar.jpg')
-        .expect('Content-Type', 'image/jpeg')
-        .expect(200)
-        .end();
-    });
-  });
+  it('Content-Type header', () => Promise.using(prepareServer(), app => request(app).get('/bar.jpg')
+    .expect('Content-Type', 'image/jpeg')
+    .expect(200)
+    .end()));
 
-  it('Enable compression if options.compress is true', function() {
+  it('Enable compression if options.compress is true', () => {
     hexo.config.server.compress = true;
 
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/')
-        .expect('Content-Encoding', 'gzip')
-        .end();
-    }).finally(function() {
+    return Promise.using(prepareServer(), app => request(app).get('/')
+      .expect('Content-Encoding', 'gzip')
+      .end()).finally(() => {
       hexo.config.server.compress = false;
     });
   });
 
-  it('Disable compression if options.compress is false', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/')
-        .end()
-        .then(function(res) {
-          res.headers.should.not.have.property('Content-Encoding');
-        });
-    });
+  it('Disable compression if options.compress is false', () => Promise.using(prepareServer(), app => request(app).get('/')
+    .end()
+    .then(res => {
+      res.headers.should.not.have.property('Content-Encoding');
+    })));
+
+  it('static asset', () => {
+    const path = join(hexo.public_dir, 'test.html');
+    const content = 'test html';
+
+    return fs.writeFile(path, content).then(() => Promise.using(prepareServer(), app => request(app).get('/test.html')
+      .expect('Content-Type', 'text/html; charset=UTF-8')
+      .expect(200, content)
+      .end())).finally(() => fs.unlink(path));
   });
 
-  it('static asset', function() {
-    var path = pathFn.join(hexo.public_dir, 'test.html');
-    var content = 'test html';
+  it('invalid port', () => server({port: -100}).should.to.rejectedWith(RangeError, 'Port number -100 is invalid. Try a number between 1 and 65535.'));
 
-    return fs.writeFile(path, content).then(function() {
-      return Promise.using(prepareServer(), function(app) {
-        return request(app).get('/test.html')
-          .expect('Content-Type', 'text/html; charset=UTF-8')
-          .expect(200, content)
-          .end();
-      });
-    }).finally(function() {
-      return fs.unlink(path);
-    });
-  });
+  it('invalid port > 65535', () => server({port: 65536}).should.to.rejectedWith(RangeError, 'Port number 65536 is invalid. Try a number between 1 and 65535.'));
 
-  it('invalid port', function() {
-    return server({port: -100}).catch(function(err) {
-      err.should.have.property('message', 'Port number -100 is invalid. Try a number between 1 and 65535.');
-    });
-  });
+  it('change port setting', () => Promise.using(prepareServer({port: 5000}), app => request(app).get('/')
+    .expect(200, 'index')
+    .end()));
 
-  it('invalid port > 65535', function() {
-    return server({port: 65536}).catch(function(err) {
-      err.should.have.property('message', 'Port number 65536 is invalid. Try a number between 1 and 65535.');
-    });
-  });
+  it('check port before starting', () => Promise.using(prepareServer(), app => server({}).should.rejected.and.eventually.have.property('code', 'EADDRINUSE')));
 
-  it('change port setting', function() {
-    return Promise.using(prepareServer({port: 5000}), function(app) {
-      return request(app).get('/')
-        .expect(200, 'index')
-        .end();
-    });
-  });
+  it('change ip setting', () => server({ip: '1.2.3.4'}).should.rejected.and.eventually.have.property('code', 'EADDRNOTAVAIL'));
 
-  it('check port before starting', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return server({}).catch(function(err) {
-        err.code.should.eql('EADDRINUSE');
-      });
-    });
-  });
+  it('append trailing slash', () => Promise.using(prepareServer(), app => request(app).get('/foo')
+    .expect('Location', '/foo/')
+    .expect(302, 'Redirecting')
+    .end()));
 
-  it('change ip setting', function() {
-    return server({ip: '1.2.3.4'}).catch(function(err) {
-      err.code.should.eql('EADDRNOTAVAIL');
-    });
-  });
+  it('don\'t append trailing slash if URL has a extension name', () => Promise.using(prepareServer(), app => request(app).get('/bar.txt')
+    .expect(404)
+    .end()));
 
-  it('append trailing slash', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/foo')
-        .expect('Location', '/foo/')
-        .expect(302, 'Redirecting')
-        .end();
-    });
-  });
+  it('only send headers on HEAD request', () => Promise.using(prepareServer(), app => request(app).head('/')
+    .expect(200, '')
+    .end()));
 
-  it('don\'t append trailing slash if URL has a extension name', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/bar.txt')
-        .expect(404)
-        .end();
-    });
-  });
-
-  it('only send headers on HEAD request', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).head('/')
-        .expect(200, '')
-        .end();
-    });
-  });
-
-  it('redirect to root URL if root is not `/`', function() {
+  it('redirect to root URL if root is not `/`', () => {
     hexo.config.root = '/test/';
 
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/')
-        .expect('Location', '/test/')
-        .expect(302, 'Redirecting')
-        .end();
-    }).finally(function() {
+    return Promise.using(prepareServer(), app => request(app).get('/')
+      .expect('Location', '/test/')
+      .expect(302, 'Redirecting')
+      .end()).finally(() => {
       hexo.config.root = '/';
     });
   });
 
-  it('display localhost instead of 0.0.0.0', function() {
-    var spy = sinon.spy();
-    var stub = sinon.stub(hexo.log, 'info');
+  it('display localhost instead of 0.0.0.0', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo.log, 'info');
     stub.callsFake(spy);
 
-    return Promise.using(prepareServer(), function(app) {
+    return Promise.using(prepareServer(), app => {
       spy.args[1][1].should.contain('localhost');
-    }).finally(function() {
+    }).finally(() => {
       stub.restore();
     });
   });
 
-  it('display localhost instead of [::]', function() {
-    var spy = sinon.spy();
-    var stub = sinon.stub(hexo.log, 'info');
+  it('display localhost instead of [::]', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo.log, 'info');
     stub.callsFake(spy);
 
-    return Promise.using(prepareServer({ip: '::'}), function(app) {
+    return Promise.using(prepareServer({ip: '::'}), app => {
       spy.args[1][1].should.contain('localhost');
-    }).finally(function() {
+    }).finally(() => {
       stub.restore();
     });
   });
