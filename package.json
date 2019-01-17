@@ -43,7 +43,7 @@
     "istanbul": "^0.4.1",
     "mocha": "^5.2.0",
     "sinon": "^7.0.0",
-    "supertest": "^1.2.0",
+    "supertest": "^3.4.1",
     "supertest-promised": "^1.0.0",
     "uuid": "^3.3.2"
   },
