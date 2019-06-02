@@ -5,8 +5,8 @@ sudo: false
 cache: false
 
 node_js:
-  - "6"
   - "8"
+  - "10"
   - "node"
 
 script:
