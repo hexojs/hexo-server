@@ -8,7 +8,7 @@ const request = require('supertest-promised');
 const { join } = require('path');
 const fs = require('hexo-fs');
 const Promise = require('bluebird');
-const uuid = require('uuid');
+const uuidv4 = require('uuid/v4');
 const sinon = require('sinon');
 
 describe('server', () => {
@@ -55,7 +55,7 @@ describe('server', () => {
 
     return server(options).then(app => {
       app.on('connection', conn => {
-        const id = uuid.v4();
+        const id = uuidv4();
 
         connections[id] = conn;
 
