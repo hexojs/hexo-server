@@ -11,6 +11,10 @@
   "directories": {
     "lib": "./lib"
   },
+  "files": [
+    "index.js",
+    "lib/"
+  ],
   "repository": "hexojs/hexo-server",
   "homepage": "http://hexo.io/",
   "keywords": [
