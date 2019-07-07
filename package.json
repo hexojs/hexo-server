@@ -36,7 +36,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.1",
     "eslint-config-hexo": "^3.0.0",
     "hexo": "^3.8.0",
     "hexo-fs": "^1.0.2",
