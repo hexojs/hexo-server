@@ -4,7 +4,7 @@ const chai = require('chai');
 chai.use(require('chai-as-promised'));
 chai.should();
 const Hexo = require('hexo');
-const request = require('supertest-promised');
+const request = require('supertest');
 const { join } = require('path');
 const fs = require('hexo-fs');
 const Promise = require('bluebird');
@@ -150,7 +150,7 @@ describe('server', () => {
     .end()));
 
   it('only send headers on HEAD request', () => Promise.using(prepareServer(), app => request(app).head('/')
-    .expect(200, {})
+    .expect(200, '')
     .end()));
 
   it('redirect to root URL if root is not `/`', () => {
