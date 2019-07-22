@@ -142,7 +142,7 @@ describe('server', () => {
     .expect(404)));
 
   it('only send headers on HEAD request', () => Promise.using(prepareServer(), app => request(app).head('/')
-    .expect(200, '')));
+    .expect(200, undefined)));
 
   it('redirect to root URL if root is not `/`', () => {
     hexo.config.root = '/test/';
