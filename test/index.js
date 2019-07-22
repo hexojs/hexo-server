@@ -81,15 +81,13 @@ describe('server', () => {
 
   it('X-Powered-By header', () => Promise.using(prepareServer(), app => request(app).get('/')
     .expect('X-Powered-By', 'Hexo')
-    .expect(200, 'index')
-    .end()));
+    .expect(200, 'index')));
 
   it('Remove X-Powered-By header if options.header is false', () => {
     hexo.config.server.header = false;
 
     return Promise.using(prepareServer(), app => request(app).get('/')
       .expect(200)
-      .end()
       .then(res => {
         res.headers.should.not.have.property('x-powered-by');
       })).finally(() => {
@@ -99,21 +97,20 @@ describe('server', () => {
 
   it('Content-Type header', () => Promise.using(prepareServer(), app => request(app).get('/bar.jpg')
     .expect('Content-Type', 'image/jpeg')
-    .expect(200)
-    .end()));
+    .expect(200)));
 
   it('Enable compression if options.compress is true', () => {
     hexo.config.server.compress = true;
 
-    return Promise.using(prepareServer(), app => request(app).get('/')
-      .expect('Content-Encoding', 'gzip')
-      .end()).finally(() => {
+    return Promise.using(
+      prepareServer(),
+      app => request(app).get('/').expect('Content-Encoding', 'gzip')
+    ).finally(() => {
       hexo.config.server.compress = false;
     });
   });
 
   it('Disable compression if options.compress is false', () => Promise.using(prepareServer(), app => request(app).get('/')
-    .end()
     .then(res => {
       res.headers.should.not.have.property('Content-Encoding');
     })));
@@ -124,17 +121,14 @@ describe('server', () => {
 
     return fs.writeFile(path, content).then(() => Promise.using(prepareServer(), app => request(app).get('/test.html')
       .expect('Content-Type', 'text/html; charset=UTF-8')
-      .expect(200, content)
-      .end())).finally(() => fs.unlink(path));
+      .expect(200, content))).finally(() => fs.unlink(path));
   });
 
   it('invalid port', () => server({port: -100}).should.to.rejectedWith(RangeError, 'Port number -100 is invalid. Try a number between 1 and 65535.'));
 
   it('invalid port > 65535', () => server({port: 65536}).should.to.rejectedWith(RangeError, 'Port number 65536 is invalid. Try a number between 1 and 65535.'));
 
-  it('change port setting', () => Promise.using(prepareServer({port: 5000}), app => request(app).get('/')
-    .expect(200, 'index')
-    .end()));
+  it('change port setting', () => Promise.using(prepareServer({port: 5000}), app => request(app).get('/').expect(200, 'index')));
 
   it('check port before starting', () => Promise.using(prepareServer(), app => server({}).should.rejected.and.eventually.have.property('code', 'EADDRINUSE')));
 
@@ -142,24 +136,20 @@ describe('server', () => {
 
   it('append trailing slash', () => Promise.using(prepareServer(), app => request(app).get('/foo')
     .expect('Location', '/foo/')
-    .expect(302, 'Redirecting')
-    .end()));
+    .expect(302, 'Redirecting')));
 
   it('don\'t append trailing slash if URL has a extension name', () => Promise.using(prepareServer(), app => request(app).get('/bar.txt')
-    .expect(404)
-    .end()));
+    .expect(404)));
 
   it('only send headers on HEAD request', () => Promise.using(prepareServer(), app => request(app).head('/')
-    .expect(200, '')
-    .end()));
+    .expect(200, '')));
 
   it('redirect to root URL if root is not `/`', () => {
     hexo.config.root = '/test/';
 
     return Promise.using(prepareServer(), app => request(app).get('/')
       .expect('Location', '/test/')
-      .expect(302, 'Redirecting')
-      .end()).finally(() => {
+      .expect(302, 'Redirecting')).finally(() => {
       hexo.config.root = '/';
     });
   });
