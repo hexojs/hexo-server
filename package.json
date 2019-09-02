@@ -43,7 +43,7 @@
     "eslint": "^6.0.1",
     "eslint-config-hexo": "^3.0.0",
     "hexo": "^3.8.0",
-    "hexo-fs": "^1.0.2",
+    "hexo-fs": "^2.0.0",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
     "sinon": "^7.3.2",
