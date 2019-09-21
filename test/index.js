@@ -136,7 +136,7 @@ describe('server', () => {
 
   it('append trailing slash', () => Promise.using(prepareServer(), app => request(app).get('/foo')
     .expect('Location', '/foo/')
-    .expect(302, 'Redirecting')));
+    .expect(301, 'Redirecting')));
 
   it('don\'t append trailing slash if URL has a extension name', () => Promise.using(prepareServer(), app => request(app).get('/bar.txt')
     .expect(404)));
@@ -149,7 +149,7 @@ describe('server', () => {
 
     return Promise.using(prepareServer(), app => request(app).get('/')
       .expect('Location', '/test/')
-      .expect(302, 'Redirecting')).finally(() => {
+      .expect(301, 'Redirecting')).finally(() => {
       hexo.config.root = '/';
     });
   });
