@@ -47,7 +47,8 @@ server:
 - **ip**: Server IP
 - **compress**: Enable GZIP compression
 - **cache**: Enable cache for rendered content
-  - Enable the cache will let hexo-server respond to the second request much quicker, but your changes will no longer make effects in real time.
+  - This can speed up server response. However, any changes will no longer take effect in real time.
+  - Suitable for production environment only.
 - **header**: Add `X-Powered-By: Hexo` header
 - **serveStatic**: Extra options passed to [serve-static](https://github.com/expressjs/serve-static#options)
 
