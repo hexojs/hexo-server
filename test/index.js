@@ -38,7 +38,9 @@ describe('server', () => {
     {path: 'foo/', data: 'foo'},
     {path: 'foo bar.js', data: 'file'},
     {path: 'foo bar.js.gz', data: ''},
-    {path: 'foo bar.js.br', data: ''}
+    {path: 'foo bar.js.br', data: ''},
+    {path: 'foo/index.html.br', data: ''},
+    {path: 'foo/index.html.gz', data: ''}
   ]);
 
   // Register middlewares
@@ -153,6 +155,34 @@ describe('server', () => {
             res.headers.should.not.have.property('Content-Encoding');
           })
       );
+    });
+
+    it('route / to /index.html (br)', () => {
+      hexo.config.server.preCompressed = true;
+
+      return Promise.using(
+        prepareServer(),
+        app => request(app)
+          .get('/foo/')
+          .set('Accept-Encoding', 'gzip, br')
+          .expect('Content-Encoding', 'br')
+      ).finally(() => {
+        hexo.config.server.preCompressed = false;
+      });
+    });
+
+    it('route / to /index.html (br)', () => {
+      hexo.config.server.preCompressed = true;
+
+      return Promise.using(
+        prepareServer(),
+        app => request(app)
+          .get('/foo/')
+          .set('Accept-Encoding', 'gzip')
+          .expect('Content-Encoding', 'gzip')
+      ).finally(() => {
+        hexo.config.server.preCompressed = false;
+      });
     });
   });
 
