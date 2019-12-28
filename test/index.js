@@ -28,8 +28,9 @@ describe('server', () => {
 
   // Register fake generator
   hexo.extend.generator.register('test', () => [
-    {path: '', data: 'index'},
-    {path: 'foo/', data: 'foo'},
+    {path: 'index.html', data: 'index'},
+    {path: 'foo/index.html', data: 'foo'},
+    {path: 'bar/baz.html', data: 'baz'},
     {path: 'bar.jpg', data: 'bar'}
   ]);
 
@@ -137,6 +138,12 @@ describe('server', () => {
   it('append trailing slash', () => Promise.using(prepareServer(), app => request(app).get('/foo')
     .expect('Location', '/foo/')
     .expect(302, 'Redirecting')));
+
+  it('proxy to .html if available', () => {
+    return Promise.using(prepareServer(), app => request(app).get('/bar/baz')
+      .expect(200)
+      .expect('Content-Type', 'text/html'));
+  });
 
   it('don\'t append trailing slash if URL has a extension name', () => Promise.using(prepareServer(), app => request(app).get('/bar.txt')
     .expect(404)));
