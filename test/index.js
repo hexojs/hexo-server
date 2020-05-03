@@ -8,7 +8,7 @@ const request = require('supertest');
 const { join } = require('path');
 const fs = require('hexo-fs');
 const Promise = require('bluebird');
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 const sinon = require('sinon');
 
 describe('server', () => {
