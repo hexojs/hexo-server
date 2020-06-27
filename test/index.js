@@ -95,9 +95,7 @@ describe('server', () => {
       .expect(200)
       .then(res => {
         res.headers.should.not.have.property('x-powered-by');
-      })).finally(() => {
-      hexo.config.server.header = true;
-    });
+      }));
   });
 
   it('Content-Type header', () => Promise.using(prepareServer(), app => request(app).get('/bar.jpg')
@@ -110,9 +108,7 @@ describe('server', () => {
     return Promise.using(
       prepareServer(),
       app => request(app).get('/').expect('Content-Encoding', 'gzip')
-    ).finally(() => {
-      hexo.config.server.compress = false;
-    });
+    );
   });
 
   it('Disable compression if options.compress is false', () => Promise.using(prepareServer(), app => request(app).get('/')
@@ -189,9 +185,7 @@ describe('server', () => {
 
     return Promise.using(prepareServer(), app => request(app).get('/')
       .expect('Location', '/test/')
-      .expect(302, 'Redirecting')).finally(() => {
-      hexo.config.root = '/';
-    });
+      .expect(302, 'Redirecting'));
   });
 
   it('display localhost instead of 0.0.0.0', () => {
