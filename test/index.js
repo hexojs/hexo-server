@@ -10,21 +10,21 @@ const fs = require('hexo-fs');
 const Promise = require('bluebird');
 const { v4: uuidv4 } = require('uuid');
 const sinon = require('sinon');
+const { deepMerge } = require('hexo-util');
 
 describe('server', () => {
   const hexo = new Hexo(join(__dirname, 'server_test'), {silent: true});
   const themeDir = join(hexo.base_dir, 'themes', 'test');
-
+  const defaultCfg = deepMerge(hexo.config, {
+    server: {
+      port: 4000,
+      log: false,
+      ip: '0.0.0.0',
+      compress: false,
+      header: true
+    }
+  });
   const server = require('../lib/server').bind(hexo);
-
-  // Default config
-  hexo.config.server = {
-    port: 4000,
-    log: false,
-    ip: '0.0.0.0',
-    compress: false,
-    header: true
-  };
 
   // Register fake generator
   hexo.extend.generator.register('test', () => [
@@ -46,6 +46,10 @@ describe('server', () => {
     fs.mkdirs(themeDir),
     fs.writeFile(hexo.config_path, 'theme: test')
   ]).then(() => hexo.init()));
+
+  beforeEach(() => {
+    hexo.config = deepMerge(hexo.config, defaultCfg);
+  });
 
   afterEach(() => hexo.unwatch());
 
@@ -135,14 +139,43 @@ describe('server', () => {
 
   it('change ip setting', () => server({ip: '1.2.3.4'}).should.rejected.and.eventually.have.property('code', 'EADDRNOTAVAIL'));
 
-  it('append trailing slash', () => Promise.using(prepareServer(), app => request(app).get('/foo')
-    .expect('Location', '/foo/')
-    .expect(302, 'Redirecting')));
-
+  // location `bar/baz.html`; request `bar/baz`; proxy to the location
   it('proxy to .html if available', () => {
     return Promise.using(prepareServer(), app => request(app).get('/bar/baz')
       .expect(200)
       .expect('Content-Type', 'text/html'));
+  });
+
+  // location `foo/index.html`; request `foo`; redirect to `foo/`
+  it('append trailing slash', () => {
+    return Promise.using(prepareServer(), app => request(app).get('/foo')
+      .expect(301, 'Redirecting')
+      .expect('Location', '/foo/'));
+  });
+
+  // location `bar/baz.html`; request `bar/baz/`; redirect to `bar/baz`
+  it('redirects to valid path if available', () => {
+    return Promise.using(prepareServer(), app => request(app).get('/bar/baz/')
+      .expect(301, 'Redirecting')
+      .expect('Location', '/bar/baz'));
+  });
+
+  // location `bar/baz.html`; request `bar/baz.html`; redirect to `bar/baz`
+  it('redirects to valid path if available - trailing_html', () => {
+    hexo.config.pretty_urls.trailing_html = false;
+
+    return Promise.using(prepareServer(), app => request(app).get('/bar/baz.html')
+      .expect(301, 'Redirecting')
+      .expect('Location', '/bar/baz'));
+  });
+
+  // location `foo/index.html`; request `foo/index.html`; redirect to `foo/`
+  it('redirects to valid path if available - trailing_index', () => {
+    hexo.config.pretty_urls.trailing_index = false;
+
+    return Promise.using(prepareServer(), app => request(app).get('/foo/index.html')
+      .expect(301, 'Redirecting')
+      .expect('Location', '/foo/'));
   });
 
   it('don\'t append trailing slash if URL has a extension name', () => Promise.using(prepareServer(), app => request(app).get('/bar.txt')
