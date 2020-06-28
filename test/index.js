@@ -156,8 +156,14 @@ describe('server', () => {
       .expect('Location', '/bar/baz'));
   });
 
+  it('trailing_html (default) - no redirect', () => {
+    return Promise.using(prepareServer(), app => request(app).get('/bar/baz.html')
+      .expect(200)
+      .expect('Content-Type', 'text/html'));
+  });
+
   // location `bar/baz.html`; request `bar/baz.html`; redirect to `bar/baz`
-  it('redirects to valid path if available - trailing_html', () => {
+  it('trailing_html (false) - redirect when available', () => {
     hexo.config.pretty_urls.trailing_html = false;
 
     return Promise.using(prepareServer(), app => request(app).get('/bar/baz.html')
@@ -166,7 +172,15 @@ describe('server', () => {
   });
 
   // location `foo/index.html`; request `foo/index.html`; redirect to `foo/`
-  it('redirects to valid path if available - trailing_index', () => {
+  it('trailing_index (default) - no redirect', () => {
+
+    return Promise.using(prepareServer(), app => request(app).get('/foo/index.html')
+      .expect(200)
+      .expect('Content-Type', 'text/html'));
+  });
+
+  // location `foo/index.html`; request `foo/index.html`; redirect to `foo/`
+  it('trailing_index (false) - redirect when available', () => {
     hexo.config.pretty_urls.trailing_index = false;
 
     return Promise.using(prepareServer(), app => request(app).get('/foo/index.html')
