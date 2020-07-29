@@ -9,7 +9,7 @@ hexo.config.server = Object.assign({
   ip: undefined,
   compress: false,
   header: true,
-  preCompressed: false
+  pre_compressed: false
 }, hexo.config.server);
 
 hexo.extend.console.register('server', 'Start the server.', {

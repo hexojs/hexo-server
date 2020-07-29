@@ -112,11 +112,11 @@ describe('server', () => {
     .expect('Content-Type', 'image/jpeg')
     .expect(200)));
 
-  describe('options.preCompressed', () => {
-    beforeEach(() => { hexo.config.server.preCompressed = false; });
+  describe('options.pre_compressed', () => {
+    beforeEach(() => { hexo.config.server.pre_compressed = false; });
 
     it('Serve brotli (br) if supported', async () => {
-      hexo.config.server.preCompressed = true;
+      hexo.config.server.pre_compressed = true;
 
       await Promise.using(
         prepareServer(),
@@ -129,7 +129,7 @@ describe('server', () => {
     });
 
     it('Serve gzip if br is not supported', async () => {
-      hexo.config.server.preCompressed = true;
+      hexo.config.server.pre_compressed = true;
 
       return Promise.using(
         prepareServer(),
@@ -142,7 +142,7 @@ describe('server', () => {
     });
 
     it('Disable', async () => {
-      hexo.config.server.preCompressed = false;
+      hexo.config.server.pre_compressed = false;
 
       await Promise.using(
         prepareServer(),
@@ -155,8 +155,8 @@ describe('server', () => {
       );
     });
 
-    it('route / to /index.html (br)', async () => {
-      hexo.config.server.preCompressed = true;
+    it('route / to /index.html.br', async () => {
+      hexo.config.server.pre_compressed = true;
 
       await Promise.using(
         prepareServer(),
@@ -167,8 +167,8 @@ describe('server', () => {
       );
     });
 
-    it('route / to /index.html (gzip)', async () => {
-      hexo.config.server.preCompressed = true;
+    it('route / to /index.html.gz', async () => {
+      hexo.config.server.pre_compressed = true;
 
       await Promise.using(
         prepareServer(),
