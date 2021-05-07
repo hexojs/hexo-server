@@ -38,8 +38,7 @@ server:
   cache: false
   header: true
   serveStatic:
-    extensions:
-    - html
+  pre_compressed: false
 ```
 
 - **port**: Server port
@@ -51,6 +50,7 @@ server:
   - Suitable for production environment only.
 - **header**: Add `X-Powered-By: Hexo` header
 - **serveStatic**: Extra options passed to [serve-static](https://github.com/expressjs/serve-static#options)
+- **pre_compressed**: Serve pre-compressed assets, requires a [minifier plugin](https://hexo.io/plugins/) that supports gzip or brotli
 
 ## License
 

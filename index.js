@@ -8,7 +8,8 @@ hexo.config.server = Object.assign({
   // `undefined` uses Node's default (try `::` with fallback to `0.0.0.0`)
   ip: undefined,
   compress: false,
-  header: true
+  header: true,
+  pre_compressed: false
 }, hexo.config.server);
 
 hexo.extend.console.register('server', 'Start the server.', {
@@ -23,6 +24,7 @@ hexo.extend.console.register('server', 'Start the server.', {
 }, require('./lib/server'));
 
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/header'));
+hexo.extend.filter.register('server_middleware', require('./lib/middlewares/pre_compressed'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/gzip'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/logger'));
 hexo.extend.filter.register('server_middleware', require('./lib/middlewares/route'));

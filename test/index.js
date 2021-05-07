@@ -28,14 +28,24 @@ describe('server', () => {
 
   // Register fake generator
   hexo.extend.generator.register('test', () => [
+    {path: '', data: 'index'},
     {path: 'index.html', data: 'index'},
     {path: 'foo/index.html', data: 'foo'},
+    {path: 'foo/index.html.gz', data: 'foo'},
     {path: 'bar/baz.html', data: 'baz'},
-    {path: 'bar.jpg', data: 'bar'}
+    {path: 'bar/baz.html.gz', data: 'baz'},
+    {path: 'bar.jpg', data: 'bar'},
+    {path: 'foo/', data: 'foo'},
+    {path: 'foo bar.js', data: 'file'},
+    {path: 'foo bar.js.gz', data: ''},
+    {path: 'foo bar.js.br', data: ''},
+    {path: 'foo/index.html.br', data: ''},
+    {path: 'foo/index.html.gz', data: ''}
   ]);
 
   // Register middlewares
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/header'));
+  hexo.extend.filter.register('server_middleware', require('../lib/middlewares/pre_compressed'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/gzip'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/logger'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/route'));
@@ -101,6 +111,74 @@ describe('server', () => {
   it('Content-Type header', () => Promise.using(prepareServer(), app => request(app).get('/bar.jpg')
     .expect('Content-Type', 'image/jpeg')
     .expect(200)));
+
+  describe('options.pre_compressed', () => {
+    beforeEach(() => { hexo.config.server.pre_compressed = false; });
+
+    it('Serve brotli (br) if supported', async () => {
+      hexo.config.server.pre_compressed = true;
+
+      await Promise.using(
+        prepareServer(),
+        app => request(app)
+          .get('/foo%20bar.js')
+          .set('Accept-Encoding', 'gzip, br')
+          .expect('Content-Encoding', 'br')
+          .expect('Content-Type', 'application/javascript; charset=utf-8')
+      );
+    });
+
+    it('Serve gzip if br is not supported', async () => {
+      hexo.config.server.pre_compressed = true;
+
+      return Promise.using(
+        prepareServer(),
+        app => request(app)
+          .get('/foo%20bar.js')
+          .set('Accept-Encoding', 'gzip')
+          .expect('Content-Encoding', 'gzip')
+          .expect('Content-Type', 'application/javascript; charset=utf-8')
+      );
+    });
+
+    it('Disable', async () => {
+      hexo.config.server.pre_compressed = false;
+
+      await Promise.using(
+        prepareServer(),
+        app => request(app)
+          .get('/foo%20bar.js')
+          .set('Accept-Encoding', 'gzip, br')
+          .then(res => {
+            res.headers.should.not.have.property('Content-Encoding');
+          })
+      );
+    });
+
+    it('route / to /index.html.br', async () => {
+      hexo.config.server.pre_compressed = true;
+
+      await Promise.using(
+        prepareServer(),
+        app => request(app)
+          .get('/foo/')
+          .set('Accept-Encoding', 'gzip, br')
+          .expect('Content-Encoding', 'br')
+      );
+    });
+
+    it('route / to /index.html.gz', async () => {
+      hexo.config.server.pre_compressed = true;
+
+      await Promise.using(
+        prepareServer(),
+        app => request(app)
+          .get('/foo/')
+          .set('Accept-Encoding', 'gzip')
+          .expect('Content-Encoding', 'gzip')
+      );
+    });
+  });
 
   it('Enable compression if options.compress is true', () => {
     hexo.config.server.compress = true;
