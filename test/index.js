@@ -31,10 +31,17 @@ describe('server', () => {
     {path: 'index.html', data: 'index'},
     {path: 'foo/index.html', data: 'foo'},
     {path: 'bar/baz.html', data: 'baz'},
-    {path: 'bar.jpg', data: 'bar'}
+    {path: 'bar.jpg', data: 'bar'},
+    {path: 'baz.zzz', data: ''}
   ]);
 
   // Register middlewares
+  hexo.extend.filter.register('server_middleware', app => {
+    app.use('/baz.zzz', (req, res, next) => {
+      res.setHeader('Content-Type', 'application/x-custom');
+      next();
+    });
+  });
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/header'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/gzip'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/logger'));
@@ -100,6 +107,10 @@ describe('server', () => {
 
   it('Content-Type header', () => Promise.using(prepareServer(), app => request(app).get('/bar.jpg')
     .expect('Content-Type', 'image/jpeg')
+    .expect(200)));
+
+  it('Do not try to overwrite Content-Type header', () => Promise.using(prepareServer(), app => request(app).get('/baz.zzz')
+    .expect('Content-Type', 'application/x-custom')
     .expect(200)));
 
   it('Enable compression if options.compress is true', () => {
