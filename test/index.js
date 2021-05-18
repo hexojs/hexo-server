@@ -36,8 +36,8 @@ describe('server', () => {
   ]);
 
   // Register middlewares
-  hexo.extend.filter.register('server_middleware', function(app) {
-    app.use('/baz.zzz', function (req, res, next) {
+  hexo.extend.filter.register('server_middleware', app => {
+    app.use('/baz.zzz', (req, res, next) => {
       res.setHeader('Content-Type', 'application/x-custom');
       next();
     });
@@ -109,14 +109,9 @@ describe('server', () => {
     .expect('Content-Type', 'image/jpeg')
     .expect(200)));
 
-  it('Do not try to overwrite Content-Type header', function() {
-    return Promise.using(prepareServer(), function(app) {
-      return request(app).get('/baz.zzz')
-        .expect('Content-Type', 'application/x-custom')
-        .expect(200)
-        .end();
-    });
-  });
+  it('Do not try to overwrite Content-Type header', () => Promise.using(prepareServer(), app => request(app).get('/baz.zzz')
+    .expect('Content-Type', 'application/x-custom')
+    .expect(200)));
 
   it('Enable compression if options.compress is true', () => {
     hexo.config.server.compress = true;
