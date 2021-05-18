@@ -27,13 +27,6 @@ describe('server', () => {
   const server = require('../lib/server').bind(hexo);
 
   // Register fake generator
-  hexo.extend.generator.register('test', function() {
-    return [
-      {path: '', data: 'index'},
-      {path: 'foo/', data: 'foo'},
-      {path: 'bar.jpg', data: 'bar'}
-    ];
-  });
   hexo.extend.generator.register('test', () => [
     {path: 'index.html', data: 'index'},
     {path: 'foo/index.html', data: 'foo'},
