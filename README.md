@@ -1,9 +1,8 @@
 # hexo-server
 
-[![Build Status](https://travis-ci.org/hexojs/hexo-server.svg?branch=master)](https://travis-ci.org/hexojs/hexo-server)
+[![Build Status](https://github.com/hexojs/hexo-server/workflows/Tester/badge.svg)](https://github.com/hexojs/hexo-server/actions?query=workflow%3ATester)
 [![NPM version](https://badge.fury.io/js/hexo-server.svg)](https://www.npmjs.com/package/hexo-server)
 [![Coverage Status](https://img.shields.io/coveralls/hexojs/hexo-server.svg)](https://coveralls.io/r/hexojs/hexo-server?branch=master)
-[![Build status](https://ci.appveyor.com/api/projects/status/ycbw8t7w3kjju0tv/branch/master?svg=true)](https://ci.appveyor.com/project/tommy351/hexo-server/branch/master)
 
 Server module for [Hexo].
 
