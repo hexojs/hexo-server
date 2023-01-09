@@ -44,7 +44,7 @@
     "eslint-config-hexo": "^5.0.0",
     "hexo": "^6.2.0",
     "hexo-fs": "^4.0.0",
-    "hexo-util": "^2.7.0",
+    "hexo-util": "^3.0.1",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "sinon": "^15.0.1",
