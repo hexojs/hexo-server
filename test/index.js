@@ -11,6 +11,8 @@ const Promise = require('bluebird');
 const { v4: uuidv4 } = require('uuid');
 const sinon = require('sinon');
 const { deepMerge } = require('hexo-util');
+const morgan = require('morgan');
+const rewire = require('rewire');
 
 describe('server', () => {
   const hexo = new Hexo(join(__dirname, 'server_test'), {silent: true});
@@ -25,6 +27,7 @@ describe('server', () => {
     }
   });
   const server = require('../lib/server').bind(hexo);
+  const serverModule = rewire('../lib/server');
 
   // Register fake generator
   hexo.extend.generator.register('test', () => [
@@ -42,9 +45,10 @@ describe('server', () => {
       next();
     });
   });
+  const loggerModule = rewire('../lib/middlewares/logger');
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/header'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/gzip'));
-  hexo.extend.filter.register('server_middleware', require('../lib/middlewares/logger'));
+  hexo.extend.filter.register('server_middleware', loggerModule);
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/route'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/static'));
   hexo.extend.filter.register('server_middleware', require('../lib/middlewares/redirect'));
@@ -66,6 +70,35 @@ describe('server', () => {
     const connections = {};
 
     return server(options).then(app => {
+      app.on('connection', conn => {
+        const id = uuidv4();
+
+        connections[id] = conn;
+
+        conn.on('close', () => {
+          conn.unref();
+          delete connections[id];
+        });
+      });
+
+      return app;
+    }).disposer(app => {
+      Object.keys(connections).forEach(id => {
+        const conn = connections[id];
+
+        conn.unref();
+        conn.destroy();
+      });
+
+      app.unref();
+      app.close();
+    });
+  }
+
+  function prepareServerModule(options = {}) {
+    const connections = {};
+
+    return serverModule.call(hexo, options).then(app => {
       app.on('connection', conn => {
         const id = uuidv4();
 
@@ -213,6 +246,13 @@ describe('server', () => {
       .expect(302, 'Redirecting'));
   });
 
+  it('don\'t redirect to root URL if url is not `/` or method is not `get`', () => {
+    hexo.config.root = '/test/';
+
+    return Promise.using(prepareServer(), app => request(app).head('/bar.txt')
+      .expect(404));
+  });
+
   it('display localhost instead of 0.0.0.0', () => {
     const spy = sinon.spy();
     const stub = sinon.stub(hexo.log, 'info');
@@ -235,5 +275,76 @@ describe('server', () => {
     }).finally(() => {
       stub.restore();
     });
+  });
+
+  it('static', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo, 'load');
+    stub.callsFake(spy);
+
+    return Promise.using(prepareServer({static: true}), app => {
+      spy.called.should.be.true;
+    }).finally(() => {
+      stub.restore();
+    });
+  });
+
+  it('logger', () => {
+    hexo.config.server.log = true
+    const spy = sinon.spy();
+    const stub = sinon.stub(morgan, 'format');
+    stub.callsFake(spy);
+
+    loggerModule.__with__({
+      morgan: stub
+    })(async () => {
+      return Promise.using(prepareServer(), app => {
+        return request(app).get('/bar/baz');
+      }).finally(() => {
+        spy.called.should.be.true;
+        hexo.config.server.log = false
+      })
+    });
+  });
+
+  it('open', () => {
+    const spy = sinon.spy();
+    return serverModule.__with__({
+      open: spy
+    })(async () => {
+      return Promise.using(prepareServerModule({open: true}), app => {
+        spy.called.should.be.true;
+      });
+    });
+  });
+
+  it('feed - atom', () => {
+    hexo.config.feed = {
+      path: 'bar/baz.html',
+      type: 'atom'
+    }
+    return Promise.using(prepareServer(), app => {
+      return request(app).get('/bar/baz.html').expect('Content-Type', 'application/atom+xml');
+    })
+  });
+
+  it('feed - rss', () => {
+    hexo.config.feed = {
+      path: 'bar/baz.html',
+      type: 'rss'
+    }
+    return Promise.using(prepareServer(), app => {
+      return request(app).get('/bar/baz.html').expect('Content-Type', 'application/rss+xml');
+    })
+  });
+
+  it('feed - other', () => {
+    hexo.config.feed = {
+      path: 'bar/baz.html',
+      type: ''
+    }
+    return Promise.using(prepareServer(), app => {
+      return request(app).get('/bar/baz.html').expect('Content-Type', 'text/html');
+    })
   });
 });
