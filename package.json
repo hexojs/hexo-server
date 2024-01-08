@@ -33,7 +33,7 @@
     "connect": "^3.7.0",
     "mime": "^3.0.0",
     "morgan": "^1.10.0",
-    "open": "^8.4.0",
+    "open": "^10.0.3",
     "picocolors": "^1.0.0",
     "serve-static": "^1.15.0"
   },
