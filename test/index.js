@@ -290,7 +290,7 @@ describe('server', () => {
   });
 
   it('logger', () => {
-    hexo.config.server.log = true
+    hexo.config.server.log = true;
     const spy = sinon.spy();
     const stub = sinon.stub(morgan, 'format');
     stub.callsFake(spy);
@@ -302,8 +302,8 @@ describe('server', () => {
         return request(app).get('/bar/baz');
       }).finally(() => {
         spy.called.should.be.true;
-        hexo.config.server.log = false
-      })
+        hexo.config.server.log = false;
+      });
     });
   });
 
@@ -322,29 +322,29 @@ describe('server', () => {
     hexo.config.feed = {
       path: 'bar/baz.html',
       type: 'atom'
-    }
+    };
     return Promise.using(prepareServer(), app => {
       return request(app).get('/bar/baz.html').expect('Content-Type', 'application/atom+xml');
-    })
+    });
   });
 
   it('feed - rss', () => {
     hexo.config.feed = {
       path: 'bar/baz.html',
       type: 'rss'
-    }
+    };
     return Promise.using(prepareServer(), app => {
       return request(app).get('/bar/baz.html').expect('Content-Type', 'application/rss+xml');
-    })
+    });
   });
 
   it('feed - other', () => {
     hexo.config.feed = {
       path: 'bar/baz.html',
       type: ''
-    }
+    };
     return Promise.using(prepareServer(), app => {
       return request(app).get('/bar/baz.html').expect('Content-Type', 'text/html');
-    })
+    });
   });
 });
