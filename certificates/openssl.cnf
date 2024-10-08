@@ -1,0 +1,30 @@
+[ req ]
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+
+[ req_distinguished_name ]
+countryName                  = Country Name (2 letter code)
+countryName_default          = ID
+stateOrProvinceName          = State or Province Name (full name)
+stateOrProvinceName_default  = East Java
+localityName                 = Locality Name (eg, city)
+localityName_default         = Surabaya
+organizationName             = Organization Name (eg, company)
+organizationName_default     = WMI
+organizationalUnitName       = Organizational Unit Name (eg, section)
+organizationalUnitName_default = Developer
+commonName                   = Common Name (e.g. server FQDN or YOUR name)
+commonName_default           = dev.webmanajemen.com
+commonName_max               = 64
+emailAddress                 = Email Address
+emailAddress_default         = dimaslanjaka@gmail.com
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = dev.webmanajemen.com
+DNS.2 = localhost
+DNS.3 = 192.168.1.75
+DNS.3 = 127.0.0.1

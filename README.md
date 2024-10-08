@@ -21,10 +21,13 @@ $ hexo server
 Option | Description | Default
 --- | --- | ---
 `-i`, `--ip` | Override the default server IP. | `::` when IPv6 is available, else `0.0.0.0` (note: in most systems, `::` also binds to `0.0.0.0`)
-`-p`, `--port` | Override the default port. | 4000
-`-s`, `--static` | Only serve static files. | false
-`-l`, `--log [format]` | Enable logger. Override log format. | false
-`-o`, `--open` | Immediately open the server url in your default web browser. | false
+`-p`, `--port` | Override the default port. | `4000`
+`-s`, `--static` | Only serve static files. | `false`
+`-l`, `--log [format]` | Enable logger. Override log format. | `false`
+`-o`, `--open` | Immediately open the server url in your default web browser. | `false`
+`-c`, `--cert` | Certificate path | `<lib>/certificates/localhost.crt`
+`-ck`, `--key` | Certificate key path | `<lib>/certificates/localhost.key`
+`h`, `--ssl` | Enable SSL localhost. If `--cert` and `--key` is present, ssl will enabled automatically. If `--cert` and `--key` is not present, but `--ssl` is preset, default certificate will be applied. | `false`
 
 ## Options
 
