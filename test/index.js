@@ -259,7 +259,7 @@ describe('server', () => {
     stub.callsFake(spy);
 
     return Promise.using(prepareServer(), app => {
-      spy.args[1][1].should.contain('localhost');
+      spy.args[2][1].should.contain('localhost');
     }).finally(() => {
       stub.restore();
     });
@@ -271,7 +271,7 @@ describe('server', () => {
     stub.callsFake(spy);
 
     return Promise.using(prepareServer({ip: '::'}), app => {
-      spy.args[1][1].should.contain('localhost');
+      spy.args[2][1].should.contain('localhost');
     }).finally(() => {
       stub.restore();
     });
