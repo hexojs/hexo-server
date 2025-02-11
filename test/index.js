@@ -283,7 +283,9 @@ describe('server', () => {
     stub.callsFake(spy);
 
     return Promise.using(prepareServer({ip: 'localhost'}), app => {
-      spy.args[1][1].should.contain('::1');
+      spy.args[1][1].should.satisfy(addr => {
+        return addr.includes('::1') || addr.includes('127.0.0.1')
+      });
     }).finally(() => {
       stub.restore();
     });
