@@ -277,6 +277,18 @@ describe('server', () => {
     });
   });
 
+  it('display listening address', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo.log, 'info');
+    stub.callsFake(spy);
+
+    return Promise.using(prepareServer({ip: 'localhost'}), app => {
+      spy.args[1][1].should.contain('::1');
+    }).finally(() => {
+      stub.restore();
+    });
+  });
+
   it('static', () => {
     const spy = sinon.spy();
     const stub = sinon.stub(hexo, 'load');
