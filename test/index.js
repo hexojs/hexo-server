@@ -277,6 +277,42 @@ describe('server', () => {
     });
   });
 
+  it('bind ip `::1`', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo.log, 'info');
+    stub.callsFake(spy);
+
+    return Promise.using(prepareServer({ip: '::1'}), app => {
+      spy.args[1][1].should.contain('[::1]:4000');
+    }).finally(() => {
+      stub.restore();
+    });
+  });
+
+  it('bind ip `127.0.0.1`', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo.log, 'info');
+    stub.callsFake(spy);
+
+    return Promise.using(prepareServer({ip: '127.0.0.1'}), app => {
+      spy.args[1][1].should.contain('127.0.0.1:4000');
+    }).finally(() => {
+      stub.restore();
+    });
+  });
+
+  it('bind ip `localhost`', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo.log, 'info');
+    stub.callsFake(spy);
+
+    return Promise.using(prepareServer({ip: 'localhost'}), app => {
+      spy.args[1][1].should.contain('localhost:4000');
+    }).finally(() => {
+      stub.restore();
+    });
+  });
+
   it('static', () => {
     const spy = sinon.spy();
     const stub = sinon.stub(hexo, 'load');
