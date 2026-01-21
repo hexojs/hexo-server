@@ -2,7 +2,7 @@
   "name": "hexo-server",
   "version": "3.0.0",
   "description": "Server module of Hexo.",
-  "main": "index",
+  "main": "lib/index.js",
   "scripts": {
     "eslint": "eslint .",
     "test": "mocha test/index.js",
@@ -13,7 +13,8 @@
   },
   "files": [
     "index.js",
-    "lib/"
+    "lib/",
+    "certificates/"
   ],
   "repository": "hexojs/hexo-server",
   "homepage": "https://hexo.io/",
