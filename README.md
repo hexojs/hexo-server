@@ -51,6 +51,23 @@ server:
 - **header**: Add `X-Powered-By: Hexo` header
 - **serveStatic**: Extra options passed to [serve-static](https://github.com/expressjs/serve-static#options)
 
+## Middleware
+
+`hexo-server` runs the `server_middleware` filter before starting the server. Plugins and theme scripts can register [Connect] middleware with it; the filter receives the `app` instance.
+
+For example, to add a custom response header:
+
+``` js
+hexo.extend.filter.register("server_middleware", function (app) {
+  app.use(function (req, res, next) {
+    res.setHeader("X-Hexo-Middleware", "enabled");
+    next();
+  });
+});
+```
+
+[Connect]: https://github.com/senchalabs/connect
+
 ## License
 
 MIT
