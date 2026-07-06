@@ -360,7 +360,7 @@ describe('server', () => {
       type: 'atom'
     };
     return Promise.using(prepareServer(), app => {
-      return request(app).get('/bar/baz.html').expect('Content-Type', 'application/atom+xml');
+      return request(app).get('/bar/baz.html').expect('Content-Type', 'application/atom+xml; charset=utf-8');
     });
   });
 
@@ -370,7 +370,7 @@ describe('server', () => {
       type: 'rss'
     };
     return Promise.using(prepareServer(), app => {
-      return request(app).get('/bar/baz.html').expect('Content-Type', 'application/rss+xml');
+      return request(app).get('/bar/baz.html').expect('Content-Type', 'application/rss+xml; charset=utf-8');
     });
   });
 
