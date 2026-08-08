@@ -259,7 +259,7 @@ describe('server', () => {
     stub.callsFake(spy);
 
     return Promise.using(prepareServer(), app => {
-      spy.args[1][1].should.contain('localhost');
+      spy.args[2][1].should.contain('localhost');
     }).finally(() => {
       stub.restore();
     });
@@ -271,7 +271,21 @@ describe('server', () => {
     stub.callsFake(spy);
 
     return Promise.using(prepareServer({ip: '::'}), app => {
-      spy.args[1][1].should.contain('localhost');
+      spy.args[2][1].should.contain('localhost');
+    }).finally(() => {
+      stub.restore();
+    });
+  });
+
+  it('display listening address', () => {
+    const spy = sinon.spy();
+    const stub = sinon.stub(hexo.log, 'info');
+    stub.callsFake(spy);
+
+    return Promise.using(prepareServer({ip: 'localhost'}), app => {
+      spy.args[1][1].should.satisfy(listenAddress => {
+        return listenAddress.includes('::1') || listenAddress.includes('127.0.0.1');
+      });
     }).finally(() => {
       stub.restore();
     });
